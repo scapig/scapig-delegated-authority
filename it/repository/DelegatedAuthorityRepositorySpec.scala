@@ -6,10 +6,11 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import utils.UnitSpec
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach {
 
-  val token = Token("accessToken", "refreshToken", DateTime.now().plusHours(4), Set("scope"))
+  val token = Token(DateTime.now().plusHours(4), Set("scope"), "accessToken", "refreshToken")
   val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, token,
     DateTime.now(), DateTime.now().plusHours(4))
 
@@ -31,7 +32,7 @@ class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach 
     }
 
     "update an existing delegated authority" in {
-      val updatedDelegatedAuthority = delegatedAuthority.copy(token = token.copy("newaccessToken"))
+      val updatedDelegatedAuthority = delegatedAuthority.copy(token = token.copy(accessToken = "newaccessToken"))
       await(underTest.save(delegatedAuthority))
 
       await(underTest.save(updatedDelegatedAuthority))
