@@ -22,7 +22,7 @@ class TokenControllerSpec extends UnitSpec with MockitoSugar {
   val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, token,
     DateTime.now(), DateTime.now().plusHours(4))
 
-  val tokenRequest = TokenRequest("clientId", "userId", Set("scope"), AuthType.PRODUCTION)
+  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope"), AuthType.PRODUCTION)
 
   trait Setup {
     val mockTokenService: TokenService = mock[TokenService]
@@ -37,7 +37,7 @@ class TokenControllerSpec extends UnitSpec with MockitoSugar {
 
     "succeed with a 200 with the delegated authority when payload is valid and service responds successfully" in new Setup {
 
-      val result: Result = await(underTest.token()(request.withBody(Json.toJson(tokenRequest))))
+      val result: Result = await(underTest.token()(request.withBody(Json.toJson(authorityRequest))))
 
       status(result) shouldBe Status.OK
       jsonBodyOf(result).as[DelegatedAuthority] shouldBe delegatedAuthority

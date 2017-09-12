@@ -1,9 +1,9 @@
 package models
 
-case class TokenRequest(clientId: String,
-                        userId: String,
-                        scopes: Set[String],
-                        authType: AuthType.AuthType) {
+case class AuthorityRequest(clientId: String,
+                            userId: String,
+                            scopes: Set[String],
+                            authType: AuthType.AuthType) {
 
   require(!clientId.trim.isEmpty, "clientId cannot be empty")
   require(!userId.trim.isEmpty, "userId cannot be empty")
