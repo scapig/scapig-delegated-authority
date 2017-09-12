@@ -1,7 +1,7 @@
 package services
 
 import config.AppContext
-import models.{AuthType, DelegatedAuthority, Token, AuthorityRequest}
+import models.{AuthType, AuthorityRequest, DelegatedAuthority, Token}
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.mockito.BDDMockito.given
 import org.mockito.{BDDMockito, Matchers}
@@ -12,15 +12,18 @@ import repository.DelegatedAuthorityRepository
 import utils.UnitSpec
 
 import scala.concurrent.Future
+import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.duration.DurationLong
 
-class TokenServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterAll {
+class AuthorityServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterAll {
+
+  val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, Token(DateTime.now(), Set("scope1")), DateTime.now())
 
   trait Setup {
     val delegatedAuthorityRepository = mock[DelegatedAuthorityRepository]
     val appContext = mock[AppContext]
 
-    val underTest = new TokenService(delegatedAuthorityRepository, appContext)
+    val underTest = new AuthorityService(delegatedAuthorityRepository, appContext)
 
     when(appContext.authorityExpiry).thenReturn(365.days)
     when(appContext.tokenExpiry).thenReturn(4.hours)
@@ -48,9 +51,25 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterAll
     }
 
     "fail when the repository fails" in new Setup {
-      given(delegatedAuthorityRepository.save(Matchers.any())).willReturn(Future.failed(new RuntimeException("test error")))
+      given(delegatedAuthorityRepository.save(Matchers.any())).willReturn(failed(new RuntimeException("test error")))
 
       intercept[RuntimeException]{await(underTest.createToken(authorityRequest))}
+    }
+  }
+
+  "fetchByAccessToken" should {
+    "return the token from the repository" in new Setup {
+      given(delegatedAuthorityRepository.fetchByAccessToken(delegatedAuthority.token.accessToken)).willReturn(successful(Some(delegatedAuthority)))
+
+      val result = await(underTest.fetchByAccessToken(delegatedAuthority.token.accessToken))
+
+      result shouldBe Some(delegatedAuthority)
+    }
+
+    "propagate the exception when the repository failed" in new Setup {
+      given(delegatedAuthorityRepository.fetchByAccessToken(delegatedAuthority.token.accessToken)).willReturn(failed(new RuntimeException("test error")))
+
+      intercept[RuntimeException]{await(underTest.fetchByAccessToken(delegatedAuthority.token.accessToken))}
     }
   }
 }

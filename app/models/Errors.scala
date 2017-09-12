@@ -14,5 +14,6 @@ sealed abstract class ErrorResponse(
 }
 
 case class ErrorInvalidRequest(errorMessage: String) extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
+case object AuthorityNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "Authority not found")
 
 class ValidationException(message: String) extends RuntimeException(message)

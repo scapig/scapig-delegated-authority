@@ -34,4 +34,11 @@ class DelegatedAuthorityRepository @Inject()(val reactiveMongoApi: ReactiveMongo
       collection.find(Json.obj("id"-> id)).one[DelegatedAuthority]
     )
   }
+
+  def fetchByAccessToken(accessToken: String): Future[Option[DelegatedAuthority]] = {
+    repository.flatMap(collection =>
+      collection.find(Json.obj("token.accessToken"-> accessToken)).one[DelegatedAuthority]
+    )
+  }
+
 }

@@ -41,4 +41,17 @@ class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach 
     }
 
   }
+
+  "fetchByAccessToken" should {
+    "return the delegated authority when it exists" in {
+      await(underTest.save(delegatedAuthority))
+
+      await(underTest.fetchByAccessToken(delegatedAuthority.token.accessToken)) shouldBe Some(delegatedAuthority)
+    }
+
+    "return None when the delegated authority does not exist" in {
+      await(underTest.fetchByAccessToken("invalid")) shouldBe None
+    }
+
+  }
 }
