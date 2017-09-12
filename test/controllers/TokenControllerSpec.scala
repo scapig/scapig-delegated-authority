@@ -12,8 +12,8 @@ import play.api.mvc.Result
 import play.api.test.{FakeRequest, Helpers}
 import services.TokenService
 import utils.UnitSpec
+import models.JsonFormatters._
 
-import scala.concurrent.Future
 import scala.concurrent.Future.successful
 
 class TokenControllerSpec extends UnitSpec with MockitoSugar {
@@ -47,10 +47,10 @@ class TokenControllerSpec extends UnitSpec with MockitoSugar {
 
       val body = """{ "invalid": "json" }"""
 
-      val result: Result = await(underTest.token()(request.withBody(Json.toJson(body))))
+      val result: Result = await(underTest.token()(request.withBody(Json.parse(body))))
 
       status(result) shouldBe Status.BAD_REQUEST
-      jsonBodyOf(result) shouldBe Json.parse("""{"code":"INVALID_REQUEST","message":"description is required"}""")
+      jsonBodyOf(result) shouldBe Json.parse("""{"code":"INVALID_REQUEST","message":"scopes is required"}""")
       verifyZeroInteractions(mockTokenService)
     }
   }

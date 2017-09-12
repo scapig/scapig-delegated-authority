@@ -6,6 +6,8 @@ import models.TokenRequest
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.TokenService
+import scala.concurrent.ExecutionContext.Implicits.global
+import models.JsonFormatters._
 
 @Singleton
 class TokenController  @Inject()(cc: ControllerComponents, tokenService: TokenService) extends AbstractController(cc) with CommonControllers {
