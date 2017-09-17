@@ -1,9 +1,9 @@
 package models
 
-case class AuthorityRequest(clientId: String,
-                            userId: String,
-                            scopes: Set[String],
-                            environment: Environment.Environment) {
+case class TokenRequest(clientId: String,
+                        userId: String,
+                        scopes: Set[String],
+                        environment: Environment.Environment) {
 
   require(!clientId.trim.isEmpty, "clientId cannot be empty")
   require(!userId.trim.isEmpty, "userId cannot be empty")
@@ -16,4 +16,14 @@ case class AuthorityRequest(clientId: String,
 object Environment extends Enumeration {
   type Environment = Value
   val PRODUCTION, SANDBOX = Value
+}
+
+case class TokenResponse(access_token: String,
+                         refresh_token: String,
+                         expires_in: Int,
+                         scope: String,
+                         token_type: String = "bearer")
+
+object TokenResponse {
+  def apply(token: Token, expiresIn: Int): TokenResponse = TokenResponse(token.accessToken, token.refreshToken, expiresIn, token.scopes.mkString(" "))
 }

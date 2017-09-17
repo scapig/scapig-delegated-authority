@@ -1,10 +1,10 @@
 package services
 
 import config.AppContext
-import models.{Environment, AuthorityRequest, DelegatedAuthority, Token}
+import models._
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.mockito.BDDMockito.given
-import org.mockito.{BDDMockito, Matchers}
+import org.mockito.{BDDMockito, Matchers, Mockito}
 import org.mockito.Mockito.when
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.mockito.MockitoSugar
@@ -39,12 +39,12 @@ class AuthorityServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
     DateTimeUtils.setCurrentMillisSystem()
   }
 
-  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope1"), Environment.PRODUCTION)
+  val authorityRequest = TokenRequest("clientId", "userId", Set("scope1"), Environment.PRODUCTION)
 
   "createToken" should {
     "create the token and save it in the repository" in new Setup {
 
-      val result = await(underTest.createToken(authorityRequest))
+      val result = await(underTest.createAuthority(authorityRequest))
 
       result shouldBe DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, result.token, DateTime.now().plusDays(365), DateTime.now(), result.id)
       result.token shouldBe Token(DateTime.now().plusHours(4), authorityRequest.scopes, result.token.accessToken, result.token.refreshToken)
@@ -53,7 +53,7 @@ class AuthorityServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
     "fail when the repository fails" in new Setup {
       given(delegatedAuthorityRepository.save(Matchers.any())).willReturn(failed(new RuntimeException("test error")))
 
-      intercept[RuntimeException]{await(underTest.createToken(authorityRequest))}
+      intercept[RuntimeException]{await(underTest.createAuthority(authorityRequest))}
     }
   }
 

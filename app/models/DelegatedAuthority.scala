@@ -16,7 +16,7 @@ case class DelegatedAuthority(clientId: String,
                               id: UUID = UUID.randomUUID())
 
 object DelegatedAuthority {
-  def apply(authorityRequest: AuthorityRequest, tokenExpiry: FiniteDuration, authorityExpiry: FiniteDuration): DelegatedAuthority =
+  def apply(authorityRequest: TokenRequest, tokenExpiry: FiniteDuration, authorityExpiry: FiniteDuration): DelegatedAuthority =
     DelegatedAuthority(authorityRequest.clientId, authorityRequest.userId, authorityRequest.environment,
       Token(DateTime.now().plus(tokenExpiry.toMillis), authorityRequest.scopes), DateTime.now().plus(authorityExpiry.toMillis))
 }
