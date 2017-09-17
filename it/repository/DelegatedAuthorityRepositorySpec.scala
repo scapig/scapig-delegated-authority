@@ -1,6 +1,6 @@
 package repository
 
-import models.{AuthType, DelegatedAuthority, Token}
+import models.{Environment, DelegatedAuthority, Token}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import play.api.Application
@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach {
 
   val token = Token(DateTime.now().plusHours(4), Set("scope"), "accessToken", "refreshToken")
-  val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, token,
+  val delegatedAuthority = DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, token,
     DateTime.now(), DateTime.now().plusHours(4))
 
   lazy val fakeApplication: Application = new GuiceApplicationBuilder()

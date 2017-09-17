@@ -9,7 +9,7 @@ import scala.concurrent.duration.FiniteDuration
 
 case class DelegatedAuthority(clientId: String,
                               userId: String,
-                              authType: AuthType.AuthType,
+                              environment: Environment.Environment,
                               token: Token,
                               expiresAt: DateTime,
                               createdAt: DateTime = DateTime.now(),
@@ -17,7 +17,7 @@ case class DelegatedAuthority(clientId: String,
 
 object DelegatedAuthority {
   def apply(authorityRequest: AuthorityRequest, tokenExpiry: FiniteDuration, authorityExpiry: FiniteDuration): DelegatedAuthority =
-    DelegatedAuthority(authorityRequest.clientId, authorityRequest.userId, authorityRequest.authType,
+    DelegatedAuthority(authorityRequest.clientId, authorityRequest.userId, authorityRequest.environment,
       Token(DateTime.now().plus(tokenExpiry.toMillis), authorityRequest.scopes), DateTime.now().plus(authorityExpiry.toMillis))
 }
 

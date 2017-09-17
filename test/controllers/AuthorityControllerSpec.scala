@@ -20,10 +20,10 @@ import scala.concurrent.Future.successful
 class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
 
   val token = Token(DateTime.now().plusHours(4), Set("scope"), "accessToken", "refreshToken")
-  val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, token,
+  val delegatedAuthority = DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, token,
     DateTime.now(), DateTime.now().plusHours(4))
 
-  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope"), AuthType.PRODUCTION)
+  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope"), Environment.PRODUCTION)
 
   trait Setup {
     val mockTokenService: AuthorityService = mock[AuthorityService]
@@ -51,7 +51,6 @@ class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
       val result: Result = await(underTest.createAuthority()(request.withBody(Json.parse(body))))
 
       status(result) shouldBe Status.BAD_REQUEST
-      jsonBodyOf(result) shouldBe Json.parse("""{"code":"INVALID_REQUEST","message":"scopes is required"}""")
       verifyZeroInteractions(mockTokenService)
     }
   }

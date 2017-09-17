@@ -1,7 +1,7 @@
 package services
 
 import config.AppContext
-import models.{AuthType, AuthorityRequest, DelegatedAuthority, Token}
+import models.{Environment, AuthorityRequest, DelegatedAuthority, Token}
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.mockito.BDDMockito.given
 import org.mockito.{BDDMockito, Matchers}
@@ -17,7 +17,7 @@ import scala.concurrent.duration.DurationLong
 
 class AuthorityServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterAll {
 
-  val delegatedAuthority = DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, Token(DateTime.now(), Set("scope1")), DateTime.now())
+  val delegatedAuthority = DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, Token(DateTime.now(), Set("scope1")), DateTime.now())
 
   trait Setup {
     val delegatedAuthorityRepository = mock[DelegatedAuthorityRepository]
@@ -39,14 +39,14 @@ class AuthorityServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfte
     DateTimeUtils.setCurrentMillisSystem()
   }
 
-  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope1"), AuthType.PRODUCTION)
+  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope1"), Environment.PRODUCTION)
 
   "createToken" should {
     "create the token and save it in the repository" in new Setup {
 
       val result = await(underTest.createToken(authorityRequest))
 
-      result shouldBe DelegatedAuthority("clientId", "userId", AuthType.PRODUCTION, result.token, DateTime.now().plusDays(365), DateTime.now(), result.id)
+      result shouldBe DelegatedAuthority("clientId", "userId", Environment.PRODUCTION, result.token, DateTime.now().plusDays(365), DateTime.now(), result.id)
       result.token shouldBe Token(DateTime.now().plusHours(4), authorityRequest.scopes, result.token.accessToken, result.token.refreshToken)
     }
 

@@ -1,6 +1,6 @@
 package tapi
 
-import models.{AuthType, AuthorityRequest, DelegatedAuthority}
+import models.{Environment, AuthorityRequest, DelegatedAuthority}
 import play.api.libs.json.Json
 import play.mvc.Http.HeaderNames.CONTENT_TYPE
 
@@ -10,7 +10,7 @@ import play.mvc.Http.Status.OK
 
 class DelegatedAuthoritySpec extends BaseFeatureSpec {
 
-  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope1"), AuthType.PRODUCTION)
+  val authorityRequest = AuthorityRequest("clientId", "userId", Set("scope1"), Environment.PRODUCTION)
 
   feature("create and fetch delegated authority") {
 

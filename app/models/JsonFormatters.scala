@@ -7,7 +7,7 @@ object JsonFormatters {
 
   val datePattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
-  implicit val formatAuthType: Format[AuthType.Value] = EnumJson.enumFormat(AuthType)
+  implicit val formatEnvironment: Format[Environment.Value] = EnumJson.enumFormat(Environment)
 
   implicit val dateRead: Reads[DateTime] = JodaReads.jodaDateReads(datePattern)
   implicit val dateWrite: Writes[DateTime] = JodaWrites.jodaDateWrites(datePattern)
