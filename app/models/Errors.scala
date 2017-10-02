@@ -13,6 +13,7 @@ sealed abstract class ErrorResponse(
   def toHttpResponse: Result = Results.Status(httpStatusCode)(Json.toJson(this))
 }
 
+case class ErrorInternalServerError(errorMessage: String) extends ErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", errorMessage)
 case class ErrorInvalidRequest(errorMessage: String) extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
 case object AuthorityNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "Authority not found")
 
