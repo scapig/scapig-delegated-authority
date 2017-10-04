@@ -2,7 +2,7 @@ package config
 
 import javax.inject.Singleton
 
-import models.{ErrorInternalServerError, ErrorInvalidRequest}
+import models.{ErrorInternalServerError, ErrorInvalidRequest, ErrorNotFound}
 import play.api.Logger
 import play.api.http.DefaultHttpErrorHandler
 import play.api.libs.json.Json
@@ -14,12 +14,15 @@ import scala.concurrent.Future
 @Singleton
 class ErrorHandler extends DefaultHttpErrorHandler {
   override def onBadRequest(request: RequestHeader, message: String): Future[Result] = {
-    Future.successful(Results.BadRequest(Json.toJson(ErrorInvalidRequest(message)).toString()))
+    Future.successful(ErrorInvalidRequest(message).toHttpResponse)
+  }
+
+  override def onNotFound(request: RequestHeader, message: String): Future[Result] = {
+    Future.successful(ErrorNotFound().toHttpResponse)
   }
 
   override def onServerError(request: RequestHeader, exception: Throwable) = {
     Logger.error("An unexpected error occurred", exception)
     Future.successful(ErrorInternalServerError(exception.getMessage).toHttpResponse)
   }
-
 }
