@@ -3,4 +3,6 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 POST    /token                      @controllers.AuthorityController.createToken()
 
+POST    /token/refresh              @controllers.AuthorityController.refreshToken()
+
 GET     /authority                  @controllers.AuthorityController.fetchByAccessToken(accessToken: String)

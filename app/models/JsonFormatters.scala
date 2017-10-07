@@ -16,6 +16,8 @@ object JsonFormatters {
   implicit val formatTokenRequest = Json.format[TokenRequest]
   implicit val formatTokenResponse = Json.format[TokenResponse]
 
+  implicit val formatRefreshTokenRequest = Json.format[RefreshTokenRequest]
+
   implicit val formatToken = Json.format[Token]
   implicit val formatDelegatedAuthority = Json.format[DelegatedAuthority]
   implicit val errorResponseWrites = new Writes[ErrorResponse] {

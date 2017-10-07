@@ -13,7 +13,10 @@ case class DelegatedAuthority(clientId: String,
                               token: Token,
                               expiresAt: DateTime,
                               createdAt: DateTime = DateTime.now(),
-                              id: UUID = UUID.randomUUID())
+                              id: UUID = UUID.randomUUID()) {
+
+  def refresh(tokenExpiry: FiniteDuration) = this.copy(token = Token(DateTime.now().plus(tokenExpiry.toMillis), token.scopes))
+}
 
 object DelegatedAuthority {
   def apply(authorityRequest: TokenRequest, tokenExpiry: FiniteDuration, authorityExpiry: FiniteDuration): DelegatedAuthority =

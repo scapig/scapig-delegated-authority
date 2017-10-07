@@ -3,7 +3,7 @@ package repository
 import javax.inject.{Inject, Singleton}
 
 import models.JsonFormatters._
-import models.DelegatedAuthority
+import models.{DelegatedAuthority, DelegatedAuthorityNotFoundException}
 import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.UpdateWriteResult
@@ -38,6 +38,15 @@ class DelegatedAuthorityRepository @Inject()(val reactiveMongoApi: ReactiveMongo
   def fetchByAccessToken(accessToken: String): Future[Option[DelegatedAuthority]] = {
     repository.flatMap(collection =>
       collection.find(Json.obj("token.accessToken"-> accessToken)).one[DelegatedAuthority]
+    )
+  }
+
+  def fetchByRefreshToken(refreshToken: String): Future[DelegatedAuthority] = {
+    repository.flatMap(collection =>
+      collection.find(Json.obj("token.refreshToken"-> refreshToken)).one[DelegatedAuthority] map {
+        case Some(delegatedAuthority) => delegatedAuthority
+        case _ => throw DelegatedAuthorityNotFoundException()
+      }
     )
   }
 

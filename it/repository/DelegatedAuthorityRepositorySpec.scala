@@ -1,11 +1,12 @@
 package repository
 
-import models.{Environment, DelegatedAuthority, Token}
+import models.{DelegatedAuthority, DelegatedAuthorityNotFoundException, Environment, Token}
 import org.joda.time.DateTime
 import org.scalatest.BeforeAndAfterEach
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import utils.UnitSpec
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach {
@@ -54,4 +55,18 @@ class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach 
     }
 
   }
+
+  "fetchByRefreshToken" should {
+    "return the delegated authority when it exists" in {
+      await(underTest.save(delegatedAuthority))
+
+      await(underTest.fetchByRefreshToken(delegatedAuthority.token.refreshToken)) shouldBe delegatedAuthority
+    }
+
+    "fail with DelegatedAuthorityNotFoundException when the delegated authority does not exist" in {
+      intercept[DelegatedAuthorityNotFoundException]{await(underTest.fetchByRefreshToken("invalid"))}
+    }
+
+  }
+
 }

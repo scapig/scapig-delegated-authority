@@ -16,7 +16,8 @@ import utils.UnitSpec
 import models.JsonFormatters._
 import play.mvc.Http.Status.OK
 
-import scala.concurrent.Future.successful
+import scala.concurrent.Future
+import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.duration._
 
 class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
@@ -28,6 +29,11 @@ class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
   val tokenRequest = TokenRequest("clientId", "userId", Set("scope"), Environment.PRODUCTION)
   val tokenResponse = TokenResponse(delegatedAuthority.token, 14400)
 
+  val refreshTokenRequest = RefreshTokenRequest("clientId", "refreshToken")
+  val refreshedToken = token.copy(accessToken = "newAccessToken", refreshToken = "newRefreshToken")
+  val refreshedDelegatedAuthority = delegatedAuthority.copy(token = refreshedToken)
+  val refreshedTokenResponse = TokenResponse(refreshedToken, 14400)
+
   trait Setup {
     val mockTokenService: AuthorityService = mock[AuthorityService]
     val mockAppContext = mock[AppContext]
@@ -36,7 +42,8 @@ class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
     val request = FakeRequest()
 
     given(mockAppContext.tokenExpiry).willReturn(4 hours)
-    given(mockTokenService.createAuthority(any())).willReturn(successful(delegatedAuthority))
+    given(mockTokenService.createAuthority(tokenRequest)).willReturn(successful(delegatedAuthority))
+    given(mockTokenService.refreshAuthority(refreshTokenRequest)).willReturn(successful(refreshedDelegatedAuthority))
   }
 
   "createToken" should {
@@ -54,6 +61,37 @@ class AuthorityControllerSpec extends UnitSpec with MockitoSugar {
       val body = """{ "invalid": "json" }"""
 
       val result: Result = await(underTest.createToken()(request.withBody(Json.parse(body))))
+
+      status(result) shouldBe Status.BAD_REQUEST
+      verifyZeroInteractions(mockTokenService)
+    }
+  }
+
+  "refreshToken" should {
+
+    "succeed with a 200 with the refreshed token when payload is valid and service responds successfully" in new Setup {
+
+      val result: Result = await(underTest.refreshToken()(request.withBody(Json.toJson(refreshTokenRequest))))
+
+      status(result) shouldBe Status.OK
+      jsonBodyOf(result).as[TokenResponse] shouldBe refreshedTokenResponse
+    }
+
+    "fail with a 400 (Bad Request) and code = INVALID_REFRESH_TOKEN when refreshing the token fails with DelegatedAuthorityNotFoundException" in new Setup {
+
+      given(mockTokenService.refreshAuthority(refreshTokenRequest)).willReturn(failed(new DelegatedAuthorityNotFoundException()))
+
+      val result: Result = await(underTest.refreshToken()(request.withBody(Json.toJson(refreshTokenRequest))))
+
+      status(result) shouldBe Status.BAD_REQUEST
+      jsonBodyOf(result) shouldBe Json.obj("code" -> "INVALID_REFRESH_TOKEN", "message" -> "Invalid refresh token")
+    }
+
+    "fail with a 400 (Bad Request) when the json payload is invalid for the request" in new Setup {
+
+      val body = """{ "invalid": "json" }"""
+
+      val result: Result = await(underTest.refreshToken()(request.withBody(Json.parse(body))))
 
       status(result) shouldBe Status.BAD_REQUEST
       verifyZeroInteractions(mockTokenService)

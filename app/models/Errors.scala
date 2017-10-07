@@ -19,3 +19,4 @@ case object AuthorityNotFound extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "Aut
 case class ErrorNotFound() extends ErrorResponse(NOT_FOUND, "NOT_FOUND", "The resource could not be found.")
 
 class ValidationException(message: String) extends RuntimeException(message)
+case class DelegatedAuthorityNotFoundException() extends RuntimeException("Delegated authority not found")

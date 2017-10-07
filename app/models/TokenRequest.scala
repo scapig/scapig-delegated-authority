@@ -13,6 +13,9 @@ case class TokenRequest(clientId: String,
   }
 }
 
+case class RefreshTokenRequest(clientId: String,
+                               refreshToken: String)
+
 object Environment extends Enumeration {
   type Environment = Value
   val PRODUCTION, SANDBOX = Value
