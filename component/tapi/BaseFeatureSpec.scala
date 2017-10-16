@@ -7,6 +7,8 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import org.scalatest._
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import repository.DelegatedAuthorityRepository
 
 import scala.concurrent.Await.result
@@ -31,6 +33,10 @@ with GivenWhenThen with BeforeAndAfterEach with BeforeAndAfterAll with GuiceOneS
   private def mongoRepository = {
     fakeApplication.injector.instanceOf[DelegatedAuthorityRepository].repository
   }
+
+  implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
+    "mongodb.uri" -> "mongodb://localhost:27017/tapi-delegated-authority-it"
+  ).build()
 
   override protected def beforeEach(): Unit = {
     mocks.foreach(m => if (!m.server.isRunning) m.server.start())
