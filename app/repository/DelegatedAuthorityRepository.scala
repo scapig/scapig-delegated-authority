@@ -17,7 +17,7 @@ import reactivemongo.play.json._
 class DelegatedAuthorityRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)  {
 
   def repository: Future[JSONCollection] =
-    reactiveMongoApi.database.map(_.collection[JSONCollection]("tapi-delegated-authority"))
+    reactiveMongoApi.database.map(_.collection[JSONCollection]("scapig-delegated-authority"))
 
   def save(delegatedAuthority: DelegatedAuthority): Future[DelegatedAuthority] = {
     repository.flatMap(collection =>

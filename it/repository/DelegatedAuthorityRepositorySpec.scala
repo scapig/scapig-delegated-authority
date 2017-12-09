@@ -16,7 +16,7 @@ class DelegatedAuthorityRepositorySpec extends UnitSpec with BeforeAndAfterEach 
     DateTime.now(), DateTime.now().plusHours(4))
 
   lazy val fakeApplication: Application = new GuiceApplicationBuilder()
-    .configure("mongodb.uri" -> "mongodb://localhost:27017/tapi-delegated-authority-test")
+    .configure("mongodb.uri" -> "mongodb://localhost:27017/scapig-delegated-authority-test")
     .build()
 
   lazy val underTest = fakeApplication.injector.instanceOf[DelegatedAuthorityRepository]

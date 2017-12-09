@@ -1,4 +1,4 @@
-package tapi
+package scapig
 
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +35,7 @@ with GivenWhenThen with BeforeAndAfterEach with BeforeAndAfterAll with GuiceOneS
   }
 
   implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
-    "mongodb.uri" -> "mongodb://localhost:27017/tapi-delegated-authority-it"
+    "mongodb.uri" -> "mongodb://localhost:27017/scapig-delegated-authority-it"
   ).build()
 
   override protected def beforeEach(): Unit = {
