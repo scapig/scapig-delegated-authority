@@ -31,10 +31,10 @@ with GivenWhenThen with BeforeAndAfterEach with BeforeAndAfterAll with GuiceOneS
   val mocks = Seq[MockHost]()
 
   private def mongoRepository = {
-    fakeApplication.injector.instanceOf[DelegatedAuthorityRepository].repository
+    app.injector.instanceOf[DelegatedAuthorityRepository].repository
   }
 
-  implicit override lazy val app: Application =  new GuiceApplicationBuilder().configure(
+  override def fakeApplication() = new GuiceApplicationBuilder().configure(
     "mongodb.uri" -> "mongodb://localhost:27017/scapig-delegated-authority-it"
   ).build()
 
