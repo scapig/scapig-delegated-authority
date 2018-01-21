@@ -11,7 +11,14 @@ sbt universal:package-zip-tarball
 docker build -t scapig-delegated-authority .
 ``
 
+## Publishing
+``
+docker tag scapig-delegated-authority scapig/scapig-delegated-authority:VERSION
+docker login
+docker push scapig/scapig-delegated-authority:VERSION
+``
+
 ## Running
 ``
-docker run -p7030:7030 -i -a stdin -a stdout -a stderr scapig-delegated-authority sh start-docker.sh
+docker run -p9013:9013 -d scapig/scapig-delegated-authority:VERSION
 ``
