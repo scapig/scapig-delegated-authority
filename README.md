@@ -13,12 +13,12 @@ docker build -t scapig-delegated-authority .
 
 ## Publishing
 ``
-docker tag scapig-delegated-authority scapig/scapig-delegated-authority:VERSION
+docker tag scapig-delegated-authority scapig/scapig-delegated-authority
 docker login
-docker push scapig/scapig-delegated-authority:VERSION
+docker push scapig/scapig-delegated-authority
 ``
 
 ## Running
 ``
-docker run -p9013:9013 -d scapig/scapig-delegated-authority:VERSION
+docker run -p9013:9013 -d scapig/scapig-delegated-authority
 ``
