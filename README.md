@@ -1,5 +1,7 @@
 ## scapig-delegated-authority
 
+This is the microservice responsible for storing and retrieving the user tokens created by the Scapig API Gateway (http://www.scapig.com)
+
 ## Building
 ``
 sbt clean test it:test component:test
